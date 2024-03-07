@@ -13,7 +13,7 @@ public class AES {
         Cipher cifra = Cipher.getInstance("AES");
         cifra.init(Cipher.ENCRYPT_MODE, chave);
         byte[] textoCifrado = cifra.doFinal(texto.getBytes());
-        return Base64.getEncoder().encodeToString(textoCifrado);
+        return Base64.getEncoder().encodeToString(textoCifrado);    
     }
 
     public static String descriptografar(String chaveAES, String textoCifrado) throws Exception {
