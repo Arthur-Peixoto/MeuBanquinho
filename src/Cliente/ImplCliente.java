@@ -4,15 +4,14 @@ import Utils.Banco;
 import Utils.Conta;
 import Utils.Mensagem;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map.Entry;
 
 import Cifras.AES;
+import Cifras.Hmac;
 import Cifras.Vernamm;
 
 import java.util.Scanner;
@@ -27,6 +26,7 @@ public class ImplCliente implements Runnable {
     ObjectInputStream entrada;
     ObjectOutputStream saida;
     AES aes = new AES();
+    
 
     public ImplCliente(Socket cliente, String vernKey, String hmacKey, String aesKey) {
         this.cliente = cliente;
@@ -89,6 +89,8 @@ public class ImplCliente implements Runnable {
                             saida.writeObject(mensagemzinh);
                             saida.flush();
 
+                            ouvirThread();
+
                             break;
                         case 2:
                             System.out.println("Digite seu Nome: ");
@@ -127,10 +129,40 @@ public class ImplCliente implements Runnable {
         
     }
 
-    public String codifica(String recebeMensagem) {
-        recebeMensagem = Vernamm.cifrar(recebeMensagem, VernKey);
-        recebeMensagem = aes.cifrar(recebeMensagem);
+    public String decodifa(String mensagem){
+        try {
+            mensagem = AES.descriptografar(AesKey,mensagem);
+            mensagem = Vernamm.decifrar(mensagem, VernKey);
+            mensagem = Hmac.hMac(HmacKey, mensagem);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+       
+
+        return mensagem;
+    }
+
+    public String codifica(String recebeMensagem) {    
+        try {
+            recebeMensagem = Hmac.hMac(HmacKey, recebeMensagem);
+            recebeMensagem = Vernamm.cifrar(recebeMensagem, VernKey);
+            recebeMensagem = aes.criptografar(AesKey,recebeMensagem);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return recebeMensagem;
+    }
+
+    public void ouvirThread(){
+        try {
+            saida = new ObjectOutputStream(cliente.getOutputStream());
+            entrada = new ObjectInputStream(cliente.getInputStream());
+            String message = entrada.readUTF();
+            System.out.println(message);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 }

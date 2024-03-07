@@ -24,5 +24,9 @@ public class Banco {
     public Conta getConta(String nome){
        return banquinho.get(nome);
     }
+
+    public void setConta(Conta conta){
+        banquinho.put(conta.getNome(), conta);
+     }
     
 }

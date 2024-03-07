@@ -3,10 +3,8 @@ package Server;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 import java.util.Scanner;
 import java.util.Map.Entry;
 
@@ -20,7 +18,7 @@ public class ImplServer implements Runnable {
 
     String hmacKey =  "chavehmac";
     String vernKey = "chavevernam";
-    String aesKey = "chaveaes";
+    String aesKey = "gR6@L2#Np8!TzQ7x";
 
     ServerSocket servidor;
     AES aes;
@@ -56,6 +54,7 @@ public class ImplServer implements Runnable {
                 }
                 else{
                 String cripto = mensagem.getCriptografada();
+                cripto = decodifa(cripto);
                 Conta continha = (Conta) mensagem.getMensagem();
                 switch (mensagem.getOperacao()) {
                     case 1:
@@ -70,20 +69,21 @@ public class ImplServer implements Runnable {
                             if (chave.equals(nome)) {
                                 continha.setSaldo(valor - conta.getSaldo());
                                 conta.setSaldo(valor + conta.getSaldo());
+                                break;
                             }
                             int saldoDaConta = conta.getSaldo();
                             conta.setSaldo(saldoDaConta + valor);
 
-                            retorno = conta.getNome() + " recebeu " + valor + " de " + continha.getNome();
+                            retorno = conta.getNome() + "-" + continha.getNome();
                         }
-                        String retornoCripto = Vernamm.cifrar("vernam", retorno);
+                        String retornoCripto = Vernamm.cifrar(retorno,vernKey);
                         saida.writeUTF(retornoCripto);
                         saida.flush();
                         break;
                     case 2:
                         String retornoSaldo = "Saldo: " + continha.getSaldo();
                         System.out.println(retornoSaldo);
-                        String retornoCriptoSaldo = Vernamm.cifrar("vernam", retornoSaldo);
+                        String retornoCriptoSaldo = Vernamm.cifrar(retornoSaldo, vernKey);
                         saida.writeUTF(retornoCriptoSaldo);
                         saida.flush();
                         break;
@@ -113,10 +113,8 @@ public class ImplServer implements Runnable {
                             }
                         }
                         String retornoInvestimentos = "Investimentos realizados!";
-                        String retornoCriptoInvestimentos = Vernamm.cifrar("vernam", retornoInvestimentos);
-                        retornoCriptoInvestimentos = aes.cifrar(retornoCriptoInvestimentos);
-                        Mensagem<String> retorninho = new Mensagem<>(hmac, retornoCriptoInvestimentos);
-                        saida.writeObject(retorno);
+                        codifica(retornoInvestimentos);
+                        saida.writeObject(retornoInvestimentos);
                         saida.flush();
                         break;
                     case 4:
@@ -131,8 +129,8 @@ public class ImplServer implements Runnable {
 
                         }
                         String retornoSaque = "Saque realizado com sucesso!";
-                        String retornoCriptoSaque = Vernamm.cifrar("vernam", retornoSaque);
-                        saida.writeUTF(retornoCriptoSaque);
+                        retornoSaque = codifica(retornoSaque);
+                        saida.writeUTF(retornoSaque);
                         saida.flush();
                         break;
                     case 5:
@@ -141,21 +139,22 @@ public class ImplServer implements Runnable {
                         int deposito = scanner.nextInt();
                         continha.setSaldo(continha.getSaldo() + deposito);
                         String retornoDeposito = "Depósito realizado com sucesso!";
-                        String retornoCriptoDeposito = Vernamm.cifrar("vernam", retornoDeposito);
-                        saida.writeUTF(retornoCriptoDeposito);
+                        retornoDeposito = codifica(retornoDeposito);
+                        saida.writeUTF(retornoDeposito);
                         saida.flush();
                         break;
                     case 6:
+                        banquinho.setConta(continha);
                         String retornoCriacaoConta = "Conta criada com sucesso!";
-                        String retornoCriptoCriacaoConta = Vernamm.cifrar("vernam", retornoCriacaoConta);
-                        saida.writeUTF(retornoCriptoCriacaoConta);
+                        retornoCriacaoConta = codifica(retornoCriacaoConta);
+                        saida.writeUTF(retornoCriacaoConta);
                         saida.flush();
                         break;
 
                     default:
                         String retornoInvalido = "Operação inválida!";
-                        String retornoCriptoInvalido = Vernamm.cifrar("vernam", retornoInvalido);
-                        saida.writeUTF(retornoCriptoInvalido);
+                        retornoInvalido = codifica(retornoInvalido);
+                        saida.writeUTF(retornoInvalido);
                         saida.flush();
                         break;
                 }
@@ -169,5 +168,27 @@ public class ImplServer implements Runnable {
         }
         scanner.close();
     }
+
+    public String decodifa(String mensagem){
+        try {
+        mensagem = aes.descriptografar(aesKey,mensagem);
+        mensagem = Vernamm.decifrar(mensagem, vernKey);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        
+        return mensagem;
+    }
+
+    public String codifica(String recebeMensagem) {
+        try {
+        recebeMensagem = Vernamm.cifrar(recebeMensagem, vernKey);
+        recebeMensagem = aes.descriptografar(aesKey,recebeMensagem);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        return recebeMensagem;
+    }
+
 
 }

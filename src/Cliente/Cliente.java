@@ -1,14 +1,8 @@
 package Cliente;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-
-import Utils.Mensagem;
 
 public class Cliente implements Runnable {
     private Socket cliente;
@@ -45,7 +39,7 @@ public class Cliente implements Runnable {
     }
 
     public static void main(String[] args) {
-        Cliente clientinho = new Cliente("127.0.0.2", 5001, 0, "chavevernam", "chavehmac", "chaveaes");
+        Cliente clientinho = new Cliente("127.0.0.2", 5001, 0, "chavevernam", "chavehmac", "gR6@L2#Np8!TzQ7x");
         clientinho.run();
              
     }
