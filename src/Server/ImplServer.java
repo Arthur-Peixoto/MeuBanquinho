@@ -39,7 +39,8 @@ public class ImplServer implements Runnable {
 
         Scanner scanner = new Scanner(System.in);
 
-        String retorno = "";
+        Mensagem retorno = new Mensagem<>(hmacKey, "");
+
         try {
             System.out.println("Nova conexão com " +
                     cliente.getInetAddress().getHostAddress());
@@ -61,7 +62,8 @@ public class ImplServer implements Runnable {
                         System.out.println(cripto);
                         String retornoCripto = "tranferência";
                         retornoCripto = codifica(retornoCripto);
-                        saida.writeUTF(retornoCripto);
+                        retorno.setCriptografada(retornoCripto);
+                        saida.writeObject(retorno);
                         saida.flush();
                         break;
                     case 2:
@@ -69,14 +71,16 @@ public class ImplServer implements Runnable {
                         String retornoSaldo = "Saldo: " + continha.getSaldo();
                         System.out.println(retornoSaldo);
                         String retornoCriptoSaldo = Vernamm.cifrar(retornoSaldo, vernKey);
-                        saida.writeUTF(retornoCriptoSaldo);
+                        retorno.setCriptografada(retornoCriptoSaldo);
+                        saida.writeObject(retorno);
                         saida.flush();
                         break;
                     case 3:
                         System.out.println("investimentos\n"+cripto);
                         String retornoInvestimentos = "Investimentos realizados!";
                         codifica(retornoInvestimentos);
-                        saida.writeObject(retornoInvestimentos);
+                        retorno.setCriptografada(retornoInvestimentos);
+                        saida.writeObject(retorno);
                         saida.flush();
                         break;
                     case 4:
@@ -93,28 +97,32 @@ public class ImplServer implements Runnable {
                         }
                         retornoSaque = "Saque realizado com sucesso!";
                         retornoSaque = codifica(retornoSaque);
-                        saida.writeUTF(retornoSaque);
+                        
+                        retorno.setCriptografada(retornoSaque);
+                        saida.writeObject(retorno);
                         saida.flush();
                         break;
                     case 5:
                         System.out.println("deposito\n"+cripto);
                         String retornoDeposito = "Depósito realizado com sucesso!";
                         retornoDeposito = codifica(retornoDeposito);
-                        saida.writeUTF(retornoDeposito);
+                        retorno.setCriptografada(retornoDeposito);
+                        saida.writeObject(retorno);
                         saida.flush();
                         break;
                     case 6:
                         banquinho.setConta(continha);
                         String retornoCriacaoConta = "Conta criada com sucesso!";
                         retornoCriacaoConta = codifica(retornoCriacaoConta);
-                        saida.writeUTF(retornoCriacaoConta);
+                        retorno.setCriptografada(retornoCriacaoConta);
+                        saida.writeObject(retorno);
                         saida.flush();
                         break;
 
                     default:
                         String retornoInvalido = "Operação inválida!";
-                        retornoInvalido = codifica(retornoInvalido);
-                        saida.writeUTF(retornoInvalido);
+                        retorno.setCriptografada(retornoInvalido);
+                        saida.writeObject(retorno);
                         saida.flush();
                         break;
                 }

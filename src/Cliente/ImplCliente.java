@@ -259,12 +259,15 @@ public class ImplCliente implements Runnable {
         return recebeMensagem;
     }
 
-    public void ouvirThread() {
+    public void ouvirThread() throws ClassNotFoundException {
         try {
-            saida = new ObjectOutputStream(cliente.getOutputStream());
             entrada = new ObjectInputStream(cliente.getInputStream());
-            String message = entrada.readUTF();
-            System.out.println(message);
+
+            while (true) {
+                Mensagem mensagem = (Mensagem) entrada.readObject();
+                String descripto = decodifa(mensagem.getCriptografada());
+                System.out.println(descripto);
+            }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
