@@ -27,7 +27,7 @@ public class ImplServer implements Runnable {
     ObjectInputStream entrada;
     ObjectOutputStream saida;
     boolean condicao = true;
-    Banco banquinho = new Banco();
+    Banco banquinho = Banco.getInstance();
 
     public ImplServer(Socket cliente) {
         this.cliente = cliente;
@@ -51,7 +51,7 @@ public class ImplServer implements Runnable {
                 Mensagem mensagem = (Mensagem) entrada.readObject();
                 String hmac = mensagem.getHmac();
                 if(!hmac.equals(hmacKey)){
-                    System.out.println("te peguei canalha!");
+                    System.out.println("Invasor detectado!");
                 }
                 else{
                 String cripto = mensagem.getCriptografada();
@@ -111,7 +111,7 @@ public class ImplServer implements Runnable {
                         saida.flush();
                         break;
                     case 6:
-                        banquinho.setConta(continha);
+                        banquinho.setBanquinho(continha);
                         String retornoCriacaoConta = "Conta criada com sucesso!";
                         retornoCriacaoConta = codifica(retornoCriacaoConta);
                         retorno.setCriptografada(retornoCriacaoConta);

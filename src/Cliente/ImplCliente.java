@@ -39,7 +39,7 @@ public class ImplCliente implements Runnable {
     public void run() {
 
         Conta conta = null;
-        Banco banquinho = new Banco();
+        
 
         contador++;
 
@@ -50,6 +50,9 @@ public class ImplCliente implements Runnable {
                 entrada = new ObjectInputStream(cliente.getInputStream());
 
                 while (opcao != 1) {
+
+                    Banco banquinho = Banco.getInstance();
+
                     System.out
                             .println("Cliente \n :Escolha uma opção de mensagem\n1-Logar\n2-Cadastrar");
                     opcao = scanner.nextInt();
@@ -69,6 +72,7 @@ public class ImplCliente implements Runnable {
                                 Conta continha = entry.getValue();
                                 conta = continha;
                                 if (chave.equals(nome1)) {
+                                    if(senha1.equals(continha.getSenha()))
                                     isConected = true;
                                     break;
                                 }
@@ -85,6 +89,7 @@ public class ImplCliente implements Runnable {
                                 switch (opcao) {
                                     case 1:
                                         System.out.println("tranferência");
+                                        scanner.nextLine();
                                         System.out.println("pra quem você quer transferir?");
                                         String nome = scanner.nextLine();
                                         System.out.println("qual valor você quer transferir?");
@@ -125,6 +130,7 @@ public class ImplCliente implements Runnable {
                                                         + "Reais\nEm 6 meses: " + ((saldo * 0.5) * 6 + saldo)
                                                         + "Reais\nEm 12 meses: " + ((saldo * 0.5) * 12 + saldo));
                                         System.out.println("Deseja investir na renda fixa? (SIM(S) / NAO(N))");
+                                        scanner.nextLine();
                                         String resp = scanner.nextLine();
                                         if (resp.equals("S")) {
                                             System.out.println("Quanto deseja investir?");
@@ -135,6 +141,7 @@ public class ImplCliente implements Runnable {
                                                     + "Reais\nEm 12 meses: " + ((invest * 1.5) * 12 + invest));
                                             System.out.println(
                                                     "Deseja realmente investir essa quantia? (SIM(S) / NAO(N))");
+                                                    scanner.nextLine();
                                             String res = scanner.nextLine();
                                             if (res.equals("S")) {
                                                 if (saldo < invest) {
@@ -194,7 +201,7 @@ public class ImplCliente implements Runnable {
                                         break;
                                 }
 
-                                ouvirThread();
+                                //ouvirThread();
 
                             }
 
@@ -223,6 +230,8 @@ public class ImplCliente implements Runnable {
                             saida.writeObject(mensagemzinha);
                             saida.flush();
 
+                            //ouvirThread();
+
                             break;
 
                         default:
@@ -240,7 +249,7 @@ public class ImplCliente implements Runnable {
         try {
             mensagem = AES.descriptografar(AesKey, mensagem);
             mensagem = Vernamm.decifrar(mensagem, VernKey);
-            // mensagem = Hmac.hMac(HmacKey, mensagem);
+            //mensagem = Hmac.hMac(HmacKey, mensagem);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -250,7 +259,7 @@ public class ImplCliente implements Runnable {
 
     public String codifica(String recebeMensagem) {
         try {
-            // recebeMensagem = Hmac.hMac(HmacKey, recebeMensagem);
+            //recebeMensagem = Hmac.hMac(HmacKey, recebeMensagem);
             recebeMensagem = Vernamm.cifrar(recebeMensagem, VernKey);
             recebeMensagem = aes.criptografar(AesKey, recebeMensagem);
         } catch (Exception e) {

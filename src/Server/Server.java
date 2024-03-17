@@ -30,13 +30,11 @@ public class Server implements Runnable{
             }
         } catch (Exception e) {
             // TODO: handle exception
-        }
-        
-       
+        } 
     }
 
     public static void main(String[] args) {
-        Server serverzinho = new Server(5001);
+        Server serverzinho = new Server(5000);
         serverzinho.run();   
     }
     

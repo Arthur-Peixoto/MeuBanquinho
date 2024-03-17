@@ -25,8 +25,10 @@ public class Cliente implements Runnable {
     @Override
     public void run() {
         try {
+            
+
             cliente = new Socket(ip, porta);
-            System.out.println( "Cliente conectado na porta" + cliente.getInetAddress().getAddress());
+            System.out.println( "Cliente conectado na porta" + cliente.getPort());
             ImplCliente handlerCliente = new ImplCliente(cliente, VernKey, HmacKey, AesKey);
             Thread t1 = new Thread(handlerCliente);
             t1.start();
@@ -34,14 +36,13 @@ public class Cliente implements Runnable {
             // TODO: handle exception
             System.out.println(e);
         }
-        
 
     }
 
     public static void main(String[] args) {
-        Cliente clientinho = new Cliente("127.0.0.2", 5001, 0, "chavevernam", "chavehmac", "gR6@L2#Np8!TzQ7x");
-        //Cliente clientinho = new Cliente("127.0.0.3", 5001, 0, "chavevernam", "chavehmac", "gR6@L2#Np8!TzQ7x");
-        //Cliente clientinho = new Cliente("127.0.0.4", 5001, 0, "chavevernam", "chavehmac", "gR6@L2#Np8!TzQ7x");
+        Cliente clientinho = new Cliente("localhost", 5000, 3, "chavevernam", "chavehmac", "gR6@L2#Np8!TzQ7x");
+        //Cliente clientinho = new Cliente("localhost", 5001, 0, "chavevernam", "chavehmac", "gR6@L2#Np8!TzQ7x");
+        //Cliente clientinho = new Cliente("localhost", 5001, 0, "chavevernam", "chavehmac", "gR6@L2#Np8!TzQ7x");
 
         clientinho.run();
              
